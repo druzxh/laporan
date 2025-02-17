@@ -7,7 +7,7 @@
                 <!-- Select User -->
                 <div style="flex: 1;">
                     <label for="user_id" style="display: block; font-size: 14px; font-weight: medium; color: #4a4a4a; margin-bottom: 8px;">Disusun Oleh:</label>
-                    <select name="user_id" id="user_id" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                    <select name="user_id" id="user_id" style="width: 100%; padding: 8px; border: 1px solid #2563eb; border-radius: 6px; background-color: #ffffff; color: #1d4ed8;" required>
                         <option value="" disabled selected>Pilih User</option>
                         @foreach (\App\Models\User::all() as $user)
                             <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -18,7 +18,7 @@
                 <!-- Select Year -->
                 <div style="flex: 1;">
                     <label for="tahun" style="display: block; font-size: 14px; font-weight: medium; color: #4a4a4a; margin-bottom: 8px;">Tahun:</label>
-                    <select name="tahun" id="tahun" onchange="updateBulanOptions()" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                    <select name="tahun" id="tahun" onchange="updateBulanOptions()" style="width: 100%; padding: 8px; border: 1px solid #2563eb; border-radius: 6px; background-color: #ffffff; color: #1d4ed8;" required>
                         <option value="" disabled selected>Pilih Tahun</option>
                         @for ($i = now()->year; $i >= now()->year - 4; $i--)
                             <option value="{{ $i }}">{{ $i }}</option>
@@ -29,7 +29,7 @@
                 <!-- Select Month -->
                 <div style="flex: 1;">
                     <label for="bulan" style="display: block; font-size: 14px; font-weight: medium; color: #4a4a4a; margin-bottom: 8px;">Bulan:</label>
-                    <select name="bulan" id="bulan" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                    <select name="bulan" id="bulan" style="width: 100%; padding: 8px; border: 1px solid #2563eb; border-radius: 6px; background-color: #ffffff; color: #1d4ed8;" required>
                         <option value="" disabled selected>Pilih Bulan</option>
                         @php
                             $currentMonth = now()->month;
@@ -51,7 +51,7 @@
                 <!-- Select User -->
                 <div style="flex: 1;">
                     <label for="verifikator_id" style="display: block; font-size: 14px; font-weight: medium; color: #4a4a4a; margin-bottom: 8px;">Diverifikasi Oleh:</label>
-                    <select name="verifikator_id" id="verifikator_id" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                    <select name="verifikator_id" id="verifikator_id" style="width: 100%; padding: 8px; border: 1px solid #2563eb; border-radius: 6px; background-color: #ffffff; color: #1d4ed8;" required>
                         <option value="" disabled selected>Pilih Verifikator</option>
                         @foreach (\App\Models\TandaTangan::where('type', 'verifikator')->get() as $verifikator)
                             <option value="{{ $verifikator->id }}">{{ $verifikator->name }}</option>
@@ -61,7 +61,7 @@
                 <!-- Select User -->
                 <div style="flex: 1;">
                     <label for="persetujuan_id" style="display: block; font-size: 14px; font-weight: medium; color: #4a4a4a; margin-bottom: 8px;">Disetujui Oleh:</label>
-                    <select name="persetujuan_id" id="persetujuan_id" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                    <select name="persetujuan_id" id="persetujuan_id" style="width: 100%; padding: 8px; border: 1px solid #2563eb; border-radius: 6px; background-color: #ffffff; color: #1d4ed8;" required>
                         <option value="" disabled selected>Pilih Persetujuan</option>
                         @foreach (\App\Models\TandaTangan::where('type', 'persetujuan')->get() as $persetujuan)
                             <option value="{{ $persetujuan->id }}">{{ $persetujuan->name }}</option>

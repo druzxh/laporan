@@ -3,6 +3,9 @@
 namespace App\Filament\Admin\Pages;
 
 use Filament\Pages\Page;
+use Filament\Forms;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
 
 use Illuminate\Http\Request; // Pastikan Request diimpor
 use Barryvdh\DomPDF\Facade\Pdf; // Untuk PDF
@@ -168,5 +171,12 @@ class ReportGenerator extends Page
         $phpWord->save($filePath, 'Word2007');
 
         return response()->download($filePath);
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'sort' => Pages\ReportGenerator::route('/report/generator'),
+        ];
     }
 }

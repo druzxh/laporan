@@ -30,8 +30,9 @@ class TandaTanganResource extends Resource
                 ->label('Jabatan')
                 ->required(),
             Forms\Components\TextInput::make('nip')
-                ->label('NIP'),
-                Forms\Components\Select::make('type')
+                ->label('NIP')
+                ->required(),
+            Forms\Components\Select::make('type')
                 ->label('Tipe Tanda Tangan')
                 ->options([
                     'pembuat' => 'Pembuat',
