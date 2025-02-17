@@ -1,0 +1,31 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: laporanme
+    container_name: laporanme
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/var/www
+    networks:
+      - laporan-network
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: brewasdf1234
+      MYSQL_DATABASE: laporan
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - laporan-network
+networks:
+  laporan-network:
+    driver: bridge
+volumes:
+  mysql-data:

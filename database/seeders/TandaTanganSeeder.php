@@ -16,20 +16,20 @@ class TandaTanganSeeder extends Seeder
         $userData = [
             [
             'name' => 'BADRUDIN',
-            'head' => 'Disusun Oleh,',
-            'foot' => 'Penyedia Jasa',
+            'jabatan' => 'Disusun Oleh,',
+            'nip' => 'Penyedia Jasa',
             'type' => 'pembuat'
             ],
             [
             'name' => 'BAGUS GEDE ARTA PERDANA, S.KOM. M.KOM',
-            'head' => 'Pejabat Pelaksana Teknis Kegiatan,',
-            'foot' => 'NIP. 19931031 201503 1 002',
+            'jabatan' => 'Pejabat Pelaksana Teknis Kegiatan,',
+            'nip' => 'NIP. 19931031 201503 1 002',
             'type' => 'verifikator'
             ],
             [
             'name' => 'SYAIFUL BAHRI, S.Sos',
-            'head' => 'Pejabat Pembuat Komitmen,',
-            'foot' => 'NIP. 19710627 200801 1 009',
+            'jabatan' => 'Pejabat Pembuat Komitmen,',
+            'nip' => 'NIP. 19710627 200801 1 009',
             'type' => 'persetujuan'
             ]
         ];

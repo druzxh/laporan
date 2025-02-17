@@ -45,7 +45,6 @@ class LaporanSeeder extends Seeder
             ],
         ];
 
-        // Masukkan data ke tabel laporans
         foreach ($laporanData as $data) {
             Laporan::create($data);
         }
