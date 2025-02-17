@@ -7,6 +7,7 @@ use Filament\Pages\Page;
 use Illuminate\Http\Request; // Pastikan Request diimpor
 use Barryvdh\DomPDF\Facade\Pdf; // Untuk PDF
 use PhpOffice\PhpWord\PhpWord; // Untuk DOC
+use Filament\Notifications\Notification;
 
 class ReportGenerator extends Page
 {
@@ -24,6 +25,8 @@ class ReportGenerator extends Page
         $tahun = $request->tahun;
         $bulan = $request->bulan;
         $userId = $request->user_id;
+        $verifikatorTtdId = $request->verifikator_id;
+        $persetujuanTtdId = $request->persetujuan_id;
 
         $namaBulan = [
             '01' => 'Januari',
@@ -45,12 +48,38 @@ class ReportGenerator extends Page
         // $user = auth()->user(); 
 
         $user = \App\Models\User::where('id', $userId)->first();
-
-        if(!$user){
-
+        $userTtd = $user->tandaTangans;
+        $verifikatorTtd = \App\Models\TandaTangan::where('id', $verifikatorTtdId)->first();
+        $persetujuanTtd = \App\Models\TandaTangan::where('id', $persetujuanTtdId)->first();
+        
+        if (!$user) {
+            Notification::make()
+                ->title('User not found')
+                ->body('The user with the provided ID does not exist.')
+                ->danger() // untuk menandakan error
+                ->send();
+            return;
+        }
+        
+        if (!$verifikatorTtd) {
+            Notification::make()
+                ->title('Verifikator not found')
+                ->body('The verifikator with the provided ID does not exist.')
+                ->danger()
+                ->send();
+            return;
+        }
+        
+        if (!$persetujuanTtd) {
+            Notification::make()
+                ->title('Persetujuan not found')
+                ->body('The persetujuan with the provided ID does not exist.')
+                ->danger()
+                ->send();
+            return;
         }
 
-        $reports = \App\Models\Laporan::where('user_id', $user->id)
+        $reports = \App\Models\Laporan::where('user_id', $userId)
             ->where('tahun', $tahun)
             ->where('bulan', $bulan)
             ->get()
@@ -72,7 +101,7 @@ class ReportGenerator extends Page
             });
 
         $ttd = \App\Models\TandaTangan::all();
-        $pdf = Pdf::loadView('reports.pdf', compact(['user', 'reports', 'bulanNama', 'tahun', 'ttd']))->setPaper('a4', 'landscape');;
+        $pdf = Pdf::loadView('reports.pdf', compact(['user', 'reports', 'bulanNama', 'tahun', 'userTtd', 'verifikatorTtd', 'persetujuanTtd']))->setPaper('a4', 'landscape');;
 
         if ($request->has('preview')) {
             return $pdf->stream("Laporan {$bulanNama} {$tahun}.pdf");

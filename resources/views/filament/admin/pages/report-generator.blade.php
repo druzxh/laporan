@@ -6,7 +6,7 @@
             <div style="display: flex; gap: 16px;">
                 <!-- Select User -->
                 <div style="flex: 1;">
-                    <label for="user_id" style="display: block; font-size: 14px; font-weight: medium; color: #4a4a4a; margin-bottom: 8px;">User:</label>
+                    <label for="user_id" style="display: block; font-size: 14px; font-weight: medium; color: #4a4a4a; margin-bottom: 8px;">Disusun Oleh:</label>
                     <select name="user_id" id="user_id" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
                         <option value="" disabled selected>Pilih User</option>
                         @foreach (\App\Models\User::all() as $user)
@@ -45,6 +45,38 @@
                         @endfor
                     </select>
                 </div>
+            </div>
+
+            <div style="display: flex; gap: 16px;">
+                <!-- Select User -->
+                <div style="flex: 1;">
+                    <label for="verifikator_id" style="display: block; font-size: 14px; font-weight: medium; color: #4a4a4a; margin-bottom: 8px;">Diverifikasi Oleh:</label>
+                    <select name="verifikator_id" id="verifikator_id" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                        <option value="" disabled selected>Pilih Verifikator</option>
+                        @foreach (\App\Models\TandaTangan::where('type', 'verifikator')->get() as $verifikator)
+                            <option value="{{ $verifikator->id }}">{{ $verifikator->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <!-- Select User -->
+                <div style="flex: 1;">
+                    <label for="persetujuan_id" style="display: block; font-size: 14px; font-weight: medium; color: #4a4a4a; margin-bottom: 8px;">Disetujui Oleh:</label>
+                    <select name="persetujuan_id" id="persetujuan_id" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                        <option value="" disabled selected>Pilih Persetujuan</option>
+                        @foreach (\App\Models\TandaTangan::where('type', 'persetujuan')->get() as $persetujuan)
+                            <option value="{{ $persetujuan->id }}">{{ $persetujuan->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Select Template -->
+                <!-- <div style="flex: 1;">
+                    <label for="tahun" style="display: block; font-size: 14px; font-weight: medium; color: #4a4a4a; margin-bottom: 8px;">Template:</label>
+                    <select name="tahun" id="tahun" onchange="updateBulanOptions()" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                        <option value="" disabled selected>Pilih Template</option>
+                            <option value="Standar">Standar</option>
+                    </select>
+                </div> -->
             </div>
 
             <!-- Buttons for Preview and Download -->

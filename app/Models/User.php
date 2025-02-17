@@ -45,4 +45,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function tandaTangans()
+    {
+        return $this->hasOne(TandaTangan::class);
+    }
 }

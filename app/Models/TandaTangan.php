@@ -14,4 +14,9 @@ class TandaTangan extends Model
         'nip',
         'type'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

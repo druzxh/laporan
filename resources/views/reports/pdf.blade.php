@@ -196,44 +196,44 @@
                 <td style="width: 50%;">
                     Diverifikasi Oleh,<br>
                     <strong>
-                        {{$ttd[1]['jabatan']}}<br>
+                        {{$verifikatorTtd->jabatan}}<br>
                     </strong>
                     <br><br><br><br><br>
                     <strong>
                         <u>
-                            {{$ttd[1]['name']}}
+                            {{$verifikatorTtd->name}}
                         </u>
                     </strong><br>
-                    {{$ttd[1]['nip']}}
+                    {{'NIP. ' . $verifikatorTtd->nip}}
                 </td>
 
                 <td style="width: 50%;">
                     Disusun Oleh,<br>
                     <strong>
-                        {{$ttd[0]['jabatan']}}<br>
+                        {{$userTtd->jabatan}}<br>
                     </strong>
                     <br><br><br><br><br>
                     <strong>
                         <u>
-                            {{$ttd[0]['name']}}
+                            {{$userTtd->name}}
                         </u>
                     </strong><br>
-                    {{$ttd[0]['nip']}}
+                    {{$userTtd->nip}}
                 </td>
             </tr>
             <tr>
                 <td colspan="2">
                     Disetujui Oleh,<br>
                     <strong>
-                        {{$ttd[2]['jabatan']}}<br>
+                        {{$persetujuanTtd->jabatan}}<br>
                     </strong>
                     <br><br><br><br><br>
                     <strong>
                         <u>
-                            {{$ttd[2]['name']}}
+                            {{$persetujuanTtd->name}}
                         </u>
                     </strong><br>
-                    {{$ttd[2]['nip']}}
+                    {{'NIP. ' . $persetujuanTtd->nip}}
                 </td>
             </tr>
         </table>

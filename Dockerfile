@@ -33,6 +33,16 @@ RUN rm -rf node_modules package-lock.json
 
 RUN npm install
 
+RUN php artisan storage:link
+
+RUN php artisan migrate
+
+RUN php artisan db:seed --class=UserSeeder
+
+RUN php artisan db:seed --class=LaporanSeeder
+
+RUN php artisan db:seed --class=TandaTanganSeeder
+
 EXPOSE 3000
 
 CMD ["composer", "run", "dev"]

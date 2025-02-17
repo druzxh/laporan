@@ -18,18 +18,25 @@ class TandaTanganSeeder extends Seeder
             'name' => 'BADRUDIN',
             'jabatan' => 'Operator',
             'nip' => 'Penyedia Jasa',
-            'type' => 'pembuat'
+            'type' => 'pembuat',
+            'user_id' => 1
             ],
             [
             'name' => 'BAGUS GEDE ARTA PERDANA, S.KOM. M.KOM',
             'jabatan' => 'Pejabat Pelaksana Teknis Kegiatan',
-            'nip' => 'NIP. 19931031 201503 1 002',
+            'nip' => '19931031 201503 1 002',
             'type' => 'verifikator'
             ],
             [
             'name' => 'SYAIFUL BAHRI, S.Sos',
             'jabatan' => 'Pejabat Pembuat Komitmen',
-            'nip' => 'NIP. 19710627 200801 1 009',
+            'nip' => '19710627 200801 1 009',
+            'type' => 'persetujuan'
+            ],
+            [
+            'name' => 'WISMAN SYAH, ST. M.Si',
+            'jabatan' => 'Kepala Bidang Pengelolaan Aplikasi dan Persandian',
+            'nip' => '19680304 199803 1 008',
             'type' => 'persetujuan'
             ]
         ];
