@@ -31,14 +31,22 @@ class TandaTanganResource extends Resource
                 ->required(),
             Forms\Components\TextInput::make('nip')
                 ->label('NIP'),
-            Forms\Components\Select::make('type')
+                Forms\Components\Select::make('type')
                 ->label('Tipe Tanda Tangan')
                 ->options([
                     'pembuat' => 'Pembuat',
                     'verifikator' => 'Verifikator',
                     'persetujuan' => 'Persetujuan',
                 ])
-                ->required(),
+                ->required()
+                ->reactive(),
+            Forms\Components\Select::make('user_id')
+                ->label('Pembuat')
+                ->relationship('user', 'name')
+                ->searchable()
+                ->placeholder('Pilih Pembuat')
+                ->nullable()
+                ->hidden(fn (Forms\Get $get) => $get('type') !== 'pembuat')
         ]);
 
     }
