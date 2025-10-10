@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     image: laporanme
     container_name: laporanme
-    restart: unless-stopped
+    restart: always
     ports:
       - "3000:3000"
     volumes:
@@ -15,6 +15,7 @@ services:
   mysql:
     image: mysql:8.0
     container_name: mysql-container
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: brewasdf1234
       MYSQL_DATABASE: laporan
