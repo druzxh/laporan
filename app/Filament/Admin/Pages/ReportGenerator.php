@@ -96,7 +96,7 @@ class ReportGenerator extends Page
                     'bulan' => $group->first()->bulan,
                     'tahun' => $group->first()->tahun,
                     'aktifitas' => $group->pluck('aktifitas')->toArray(),
-                    'gambar' => $group->pluck('gambar')->toArray(),
+                    'gambar' => $group->pluck('gambar')->filter()->values()->toArray(),
                 ];
             })
             ->sortBy(function ($report) {
@@ -104,7 +104,7 @@ class ReportGenerator extends Page
             });
 
         $ttd = \App\Models\TandaTangan::all();
-        $pdf = Pdf::loadView('reports.pdf', compact(['user', 'reports', 'bulanNama', 'tahun', 'userTtd', 'verifikatorTtd', 'persetujuanTtd']))->setPaper('a4', 'landscape');;
+        $pdf = Pdf::loadView('reports.pdf', compact(['user', 'reports', 'bulanNama', 'tahun', 'userTtd', 'verifikatorTtd', 'persetujuanTtd']))->setPaper('a4', 'landscape');
 
         if ($request->has('preview')) {
             return $pdf->stream("Laporan {$bulanNama} {$tahun}.pdf");
@@ -151,7 +151,7 @@ class ReportGenerator extends Page
                     'bulan' => $group->first()->bulan,
                     'tahun' => $group->first()->tahun,
                     'aktifitas' => $group->pluck('aktifitas')->toArray(),
-                    'gambar' => $group->pluck('gambar')->toArray(),
+                    'gambar' => $group->pluck('gambar')->filter()->values()->toArray(),
                 ];
             });
 
@@ -161,13 +161,14 @@ class ReportGenerator extends Page
 
         $section->addText('Data Laporan');
         foreach ($reports as $report) {
-            $section->addText("ID: {$report->id}, Title: {$report->title}, Description: {$report->aktifitas}");
+            $aktifitasString = implode(', ', $report['aktifitas']);
+            $section->addText("Hari: {$report['hari']}, Tanggal: {$report['tanggal']}, Aktivitas: {$aktifitasString}");
         }
 
         // Simpan file DOC
-        $filename = "Laporan {$bulanNama} {$tahun}.pdf";
+        $filename = "Laporan {$bulanNama} {$tahun}.docx";
 
-        $filePath = storage_path("app/public/{$fileName}");
+        $filePath = storage_path("app/public/{$filename}");
         $phpWord->save($filePath, 'Word2007');
 
         return response()->download($filePath);

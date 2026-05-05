@@ -181,7 +181,11 @@
                         </ul>
                     </td>
                     <td>
-                        <img src="{{ public_path('storage/' . $report['gambar'][0]) }}" alt="Lampiran Gambar" style="width: 300px; height: auto;">
+                        @if(!empty($report['gambar'][0]) && file_exists(public_path('storage/' . $report['gambar'][0])) && !is_dir(public_path('storage/' . $report['gambar'][0])))
+                            <img src="{{ public_path('storage/' . $report['gambar'][0]) }}" alt="Lampiran Gambar" style="width: 300px; height: auto;">
+                        @else
+                            <span>Tidak ada gambar</span>
+                        @endif
                     </td>
                 </tr>
                 @endforeach

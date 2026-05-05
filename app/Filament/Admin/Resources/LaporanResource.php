@@ -62,8 +62,13 @@ class LaporanResource extends Resource
             FileUpload::make('gambar')
                 ->image()
                 ->imageEditor()
-                ->required(),
-                // ->directory('laporan'),
+                ->disk('public')
+                ->directory('laporan')
+                ->visibility('public')
+                ->downloadable()
+                ->openable()
+                ->previewable()
+                ->nullable(),
         ]);
     }
 
@@ -86,6 +91,10 @@ class LaporanResource extends Resource
 
                         return "{$hari}, {$tanggal}-{$bulan}-{$tahun}";
                     }),
+
+                Tables\Columns\ImageColumn::make('gambar')
+                    ->label('Gambar')
+                    ->disk('public'),
 
                 Tables\Columns\TextColumn::make('user.name')
                     ->searchable()
