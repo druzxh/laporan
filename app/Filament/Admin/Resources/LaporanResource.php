@@ -68,6 +68,7 @@ class LaporanResource extends Resource
                 ->downloadable()
                 ->openable()
                 ->previewable()
+                ->deletable(true)
                 ->nullable(),
         ]);
     }
@@ -108,6 +109,17 @@ class LaporanResource extends Resource
                              ->orderByRaw('CAST(tanggal AS UNSIGNED) ASC');
             })
             ->filters([
+                Tables\Filters\Filter::make('aktifitas_sama')
+                    ->label('Hanya Aktifitas Yang Sama')
+                    ->toggle()
+                    ->query(function (Builder $query): Builder {
+                        return $query->whereIn('aktifitas', function ($q) {
+                            $q->select('aktifitas')
+                              ->from('laporans')
+                              ->groupBy('aktifitas')
+                              ->havingRaw('COUNT(aktifitas) > 1');
+                        });
+                    }),
                 Tables\Filters\SelectFilter::make('user_id')
                     ->label('User')
                     ->options(
@@ -142,6 +154,23 @@ class LaporanResource extends Resource
                     ),
             ])
             ->actions([
+                Tables\Actions\Action::make('hapus_gambar')
+                    ->label('Hapus Gambar')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->visible(fn (\App\Models\Laporan $record) => !empty($record->gambar))
+                    ->action(function (\App\Models\Laporan $record) {
+                        if ($record->gambar) {
+                            \Illuminate\Support\Facades\Storage::disk('public')->delete($record->gambar);
+                            $record->update(['gambar' => null]);
+                            
+                            \Filament\Notifications\Notification::make()
+                                ->title('Gambar berhasil dihapus')
+                                ->success()
+                                ->send();
+                        }
+                    }),
                 Tables\Actions\EditAction::make()
             ])
             ->bulkActions([

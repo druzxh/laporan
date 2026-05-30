@@ -260,7 +260,7 @@ class GitCommitService
     /**
      * Convert commits to Laporan records.
      */
-    public function commitsToLaporanData(array $commits, int $userId): array
+    public function commitsToLaporanData(array $commits, int $userId, ?string $projectName = null): array
     {
         $namaHari = [
             'Sunday' => 'Minggu',
@@ -287,6 +287,11 @@ class GitCommitService
                 continue;
             }
 
+            // Append project name if provided
+            if ($projectName) {
+                $message .= ' - ' . $projectName;
+            }
+
             $dayEnglish = $date->format('l');
 
             $laporanData[] = [
@@ -297,6 +302,7 @@ class GitCommitService
                 'tahun' => $date->format('Y'),
                 'user_id' => $userId,
                 'gambar' => null,
+                'sha' => $commit['sha'] ?? 'unknown',
             ];
         }
 
