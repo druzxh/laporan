@@ -101,11 +101,26 @@ class LaporanResource extends Resource
                     ->label('Pembuat'),
 
             ])
+            ->defaultSort('id', 'asc')
+            ->modifyQueryUsing(function (Builder $query) {
+                return $query->orderByRaw('CAST(tahun AS UNSIGNED) ASC')
+                             ->orderByRaw('CAST(bulan AS UNSIGNED) ASC')
+                             ->orderByRaw('CAST(tanggal AS UNSIGNED) ASC');
+            })
             ->filters([
                 Tables\Filters\SelectFilter::make('user_id')
                     ->label('User')
                     ->options(
                         \App\Models\User::pluck('name', 'id')->toArray()
+                    ),
+                Tables\Filters\SelectFilter::make('tanggal')
+                    ->label('Tanggal')
+                    ->options(
+                        \App\Models\Laporan::select('tanggal')
+                            ->distinct()
+                            ->orderBy('tanggal', 'asc')
+                            ->pluck('tanggal', 'tanggal')
+                            ->toArray()
                     ),
                 Tables\Filters\SelectFilter::make('bulan')
                     ->label('Bulan')
@@ -116,11 +131,14 @@ class LaporanResource extends Resource
                             ->pluck('bulan', 'bulan')
                             ->toArray()
                     ),
-                
                 Tables\Filters\SelectFilter::make('tahun')
                     ->label('Tahun')
                     ->options(
-                        \App\Models\Laporan::pluck('tahun', 'tahun')->toArray()
+                        \App\Models\Laporan::select('tahun')
+                            ->distinct()
+                            ->orderBy('tahun', 'desc')
+                            ->pluck('tahun', 'tahun')
+                            ->toArray()
                     ),
             ])
             ->actions([
