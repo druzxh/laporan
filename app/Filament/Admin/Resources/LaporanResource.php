@@ -79,6 +79,7 @@ class LaporanResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('aktifitas')
                     ->label('Aktivitas Pekerjaan')
+                    ->words(5)
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('hari')

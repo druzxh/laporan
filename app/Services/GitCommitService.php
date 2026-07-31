@@ -75,6 +75,103 @@ class GitCommitService
     }
 
     /**
+     * Fetch a single commit's diff/patch.
+     */
+    public function fetchCommitDiff(string $repoUrl, string $token, string $sha, string $platform = 'auto'): ?string
+    {
+        if ($platform === 'auto') {
+            $platform = $this->detectPlatform($repoUrl);
+        }
+
+        try {
+            return match ($platform) {
+                'github' => $this->fetchGitHubCommitDiff($repoUrl, $token, $sha),
+                'gitlab' => $this->fetchGitLabCommitDiff($repoUrl, $token, $sha),
+                'bitbucket' => null, // Simplified for now, or implement if needed
+                default => null,
+            };
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Error fetching diff for $sha: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    protected function fetchGitHubCommitDiff(string $repoUrl, string $token, string $sha): ?string
+    {
+        $parsed = $this->parseRepoUrl($repoUrl);
+        $owner = $parsed['owner'];
+        $repo = $parsed['repo'];
+
+        $url = "https://api.github.com/repos/{$owner}/{$repo}/commits/{$sha}";
+
+        $response = Http::withHeaders([
+            'Authorization' => "Bearer {$token}",
+            'Accept' => 'application/vnd.github.v3+json',
+        ])->get($url);
+
+        if ($response->successful()) {
+            $data = $response->json();
+            $diffText = '';
+            
+            if (isset($data['files']) && is_array($data['files'])) {
+                foreach ($data['files'] as $file) {
+                    if (isset($file['patch'])) {
+                        $diffText .= "File: " . $file['filename'] . "\n";
+                        $diffText .= $file['patch'] . "\n\n";
+                    }
+                }
+            }
+            
+            // Limit to max 15 lines total to avoid massive diffs
+            $lines = explode("\n", trim($diffText));
+            if (count($lines) > 15) {
+                $lines = array_slice($lines, 0, 15);
+                $lines[] = "...(diff truncated)...";
+            }
+            return implode("\n", $lines);
+        }
+
+        return null;
+    }
+
+    protected function fetchGitLabCommitDiff(string $repoUrl, string $token, string $sha): ?string
+    {
+        $parsed = $this->parseRepoUrl($repoUrl);
+        $projectPath = urlencode($parsed['full_path']);
+        $baseUrl = $parsed['base_url'];
+
+        $url = "{$baseUrl}/api/v4/projects/{$projectPath}/repository/commits/{$sha}/diff";
+
+        $response = Http::withHeaders([
+            'PRIVATE-TOKEN' => $token,
+        ])->get($url);
+
+        if ($response->successful()) {
+            $data = $response->json();
+            $diffText = '';
+            
+            if (is_array($data)) {
+                foreach ($data as $file) {
+                    if (isset($file['diff'])) {
+                        $diffText .= "File: " . ($file['new_path'] ?? $file['old_path']) . "\n";
+                        $diffText .= $file['diff'] . "\n\n";
+                    }
+                }
+            }
+            
+            // Limit to max 15 lines total to avoid massive diffs
+            $lines = explode("\n", trim($diffText));
+            if (count($lines) > 15) {
+                $lines = array_slice($lines, 0, 15);
+                $lines[] = "...(diff truncated)...";
+            }
+            return implode("\n", $lines);
+        }
+
+        return null;
+    }
+
+    /**
      * Fetch commits from GitHub API.
      */
     protected function fetchGitHubCommits(
@@ -279,23 +376,43 @@ class GitCommitService
                 ? $commit['date']
                 : Carbon::parse($commit['date']);
 
-            // Take only the first line of the commit message
-            $message = trim(explode("\n", $commit['message'])[0]);
+            // Take the full commit message to ensure activity description is complete
+            $message = trim($commit['message']);
 
             // Skip merge commits
             if (str_starts_with(strtolower($message), 'merge')) {
                 continue;
             }
 
-            // Append project name if provided
-            if ($projectName) {
-                $message .= ' - ' . $projectName;
+            $originalContext = $message . ($projectName ? " - " . $projectName : "");
+            $contextForData = $originalContext;
+
+            // Cek apakah sudah ada laporan dengan aktifitas yang sama
+            $existingLaporan = \App\Models\Laporan::where('user_id', $userId)
+                ->where('tanggal', $date->format('d'))
+                ->where('bulan', $date->format('m'))
+                ->where('tahun', $date->format('Y'))
+                ->where('aktifitas', 'LIKE', $originalContext . '%')
+                ->first();
+
+            if (!$existingLaporan) {
+                $contextForData = $message . ($projectName ? " - " . $projectName : "");
+                if ($projectName) {
+                    if (str_contains($message, "\n")) {
+                        $message .= "\n\nProject: " . $projectName;
+                    } else {
+                        $message .= ' - ' . $projectName;
+                    }
+                }
+            } else {
+                $message = $existingLaporan->aktifitas;
             }
 
             $dayEnglish = $date->format('l');
 
             $laporanData[] = [
                 'aktifitas' => $message,
+                'original_context' => $contextForData ?? $message,
                 'hari' => $namaHari[$dayEnglish] ?? $dayEnglish,
                 'tanggal' => $date->format('d'),
                 'bulan' => $date->format('m'),

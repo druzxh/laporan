@@ -86,11 +86,11 @@
                                     </td>
                                     <td class="px-4 py-3 text-gray-400 font-mono text-xs">{{ $index + 1 }}</td>
                                     <td class="px-4 py-3">
-                                        <div class="flex items-start gap-2">
+                                        <div class="flex items-start gap-2 w-full">
                                             <span class="inline-flex items-center justify-center w-5 h-5 rounded bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5">
                                                 <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/></svg>
                                             </span>
-                                            <span class="text-gray-800 dark:text-gray-200 font-medium">{{ $item['aktifitas'] }}</span>
+                                            <textarea wire:model="previewData.{{ $index }}.aktifitas" class="w-full text-sm text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 p-2 resize-y" rows="3"></textarea>
                                         </div>
                                     </td>
                                     <td class="px-4 py-3 text-gray-600 dark:text-gray-400">{{ $item['hari'] }}</td>

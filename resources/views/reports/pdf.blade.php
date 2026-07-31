@@ -51,7 +51,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            height: 95vh;
             position: relative;
             page-break-after: always;
         }
@@ -118,7 +118,7 @@
         }
 
         .footer-page {
-            page-break-before: always;
+            /* Footer page style */
         }
 
         .footer-table {
@@ -158,33 +158,53 @@
 
     <!-- Main -->
     <div class="content-page">
-        <table>
+        <table style="table-layout: fixed; width: 100%;">
             <thead>
                 <tr>
-                    <th class="text-center">No.</th>
-                    <th>Hari/Tanggal</th>
-                    <th>Deskripsi</th>
-                    <th>Lampiran</th>
+                    <th class="text-center" style="width: 5%;">No.</th>
+                    <th style="width: 13%;">Hari/Tanggal</th>
+                    <th style="width: 25%;">Deskripsi</th>
+                    <th style="width: 57%;">Lampiran</th>
                 </tr>
             </thead>
             <tbody>
-                <?php $no = 1; ?>
+                @php
+                    $no = 1;
+                @endphp
                 @foreach ($reports as $report)
                 <tr>
                     <td class="text-center">{{ $no++ }}</td>
-                    <td>{{ $report['hari'] }}, {{ $report['tanggal'] }}/{{ $report['bulan'] }}/{{ $report['tahun'] }}</td>
+                    <td>{{ $report['hari'] }},<br>{{ $report['tanggal'] }}/{{ $report['bulan'] }}/{{ $report['tahun'] }}</td>
                     <td>
-                        <ul>
+                        <div style="text-align: justify; line-height: 1.4;">
                             @foreach ($report['aktifitas'] as $aktifitas)
-                            <li>{{ $aktifitas }}</li>
+                                <div style="margin-bottom: 5px;">{!! nl2br(e($aktifitas)) !!}</div>
                             @endforeach
-                        </ul>
+                        </div>
                     </td>
                     <td>
-                        @if(!empty($report['gambar'][0]) && file_exists(public_path('storage/' . $report['gambar'][0])) && !is_dir(public_path('storage/' . $report['gambar'][0])))
-                            <img src="{{ public_path('storage/' . $report['gambar'][0]) }}" alt="Lampiran Gambar" style="width: 300px; height: auto;">
+                        @if(!empty($report['diff_text']))
+                            <div style="background: #f8f9fa; border: 1px solid #ddd; padding: 5px; font-family: monospace; font-size: 7px; word-wrap: break-word; word-break: break-all; line-height: 1.1;">
+                                @foreach(explode("\n", $report['diff_text']) as $line)
+                                    @php
+                                        $line = str_replace("\r", "", $line);
+                                        $color = '#000'; $bg = 'transparent'; $fw = 'normal';
+                                        if(str_starts_with($line, '+')) { $color = '#28a745'; $bg = '#e6ffed'; }
+                                        elseif(str_starts_with($line, '-')) { $color = '#cb2431'; $bg = '#ffeef0'; }
+                                        elseif(str_starts_with($line, '@@') || str_starts_with($line, 'File:')) { $color = '#0366d6'; $fw = 'bold'; }
+                                    @endphp
+                                    <span style="color: {{ $color }}; background-color: {{ $bg }}; font-weight: {{ $fw }}; white-space: pre-wrap;">{{ $line }}</span><br>
+                                @endforeach
+                            </div>
+                        @elseif(!empty($report['gambar'][0]))
+                            @php $imgPath = public_path('storage/' . $report['gambar'][0]); @endphp
+                            @if(file_exists($imgPath) && !is_dir($imgPath))
+                                <img src="{{ $imgPath }}" style="max-width: 100%; height: auto; border-radius: 5px; display: block; margin: 0 auto;">
+                            @else
+                                <span>Tidak ada lampiran diff text atau gambar</span>
+                            @endif
                         @else
-                            <span>Tidak ada gambar</span>
+                            <span>Tidak ada lampiran diff text atau gambar</span>
                         @endif
                     </td>
                 </tr>
@@ -194,7 +214,7 @@
     </div>
 
     <!-- Footer -->
-    <div class="footer-page">
+    <div class="footer-page" style="page-break-inside: avoid; margin-top: 40px;">
         <table class="footer-table">
             <tr>
                 <td style="width: 50%;">

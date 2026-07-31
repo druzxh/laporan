@@ -15,7 +15,8 @@ class Laporan extends Model
         'bulan',
         'gambar',
         'tahun',
-        'user_id'
+        'user_id',
+        'diff_text',
     ];
 
     public function user()

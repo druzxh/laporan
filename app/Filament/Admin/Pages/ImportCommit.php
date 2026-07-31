@@ -159,10 +159,10 @@ class ImportCommit extends Page implements HasForms
                             ->live(onBlur: true),
 
                         Toggle::make('import_with_lampiran')
-                            ->label('Generate Gambar Lampiran')
+                            ->label('Import Diff Text')
                             ->default(false)
                             ->live()
-                            ->helperText('Otomatis membuat gambar / screenshot detail commit di latar belakang untuk diisi ke kolom gambar (Lampiran).'),
+                            ->helperText('Otomatis mengambil teks diff untuk diisi ke kolom lampiran (diff_text). Hati-hati, ini akan memperlambat import jika jumlah commit banyak.'),
 
                         Toggle::make('skip_merge')
                             ->label('Lewati Merge Commit')
@@ -211,10 +211,13 @@ class ImportCommit extends Page implements HasForms
                 return;
             }
 
+            $parsedRepo = $service->parseRepoUrl($this->repo_url);
+            $projectName = $this->project_name ?: $parsedRepo['repo'];
+
             $this->previewData = $service->commitsToLaporanData(
                 $this->fetchedCommits,
                 (int) $this->user_id,
-                $this->project_name ?: null
+                $projectName
             );
 
             // If skip merge enabled, the service already handles it
@@ -286,24 +289,22 @@ class ImportCommit extends Page implements HasForms
             $updatedCount = 0;
 
             foreach ($selectedData as $data) {
-                // Update final data based on current form state before importing
+                // Use the activity exactly as generated in the preview
                 $aktifitas = $data['aktifitas'];
-                if (!empty($this->project_name)) {
-                    // Check if not already appended in preview
-                    if (!str_ends_with($aktifitas, ' - ' . $this->project_name)) {
-                        $aktifitas .= ' - ' . $this->project_name;
-                    }
-                }
                 
                 $data['aktifitas'] = $aktifitas;
                 $data['user_id'] = $this->user_id;
 
                 // Check for duplicate based on same activity, date, and user
-                $existingLaporan = Laporan::where('aktifitas', $data['aktifitas'])
-                    ->where('tanggal', $data['tanggal'])
+                $originalContext = $data['original_context'] ?? $data['aktifitas'];
+                $existingLaporan = Laporan::where('tanggal', $data['tanggal'])
                     ->where('bulan', $data['bulan'])
                     ->where('tahun', $data['tahun'])
                     ->where('user_id', $data['user_id'])
+                    ->where(function($query) use ($originalContext, $data) {
+                        $query->where('aktifitas', 'LIKE', $originalContext . '%')
+                              ->orWhere('aktifitas', $data['aktifitas']);
+                    })
                     ->first();
 
                 $commitDetails = [
@@ -312,19 +313,36 @@ class ImportCommit extends Page implements HasForms
                 ];
 
                 if (!$existingLaporan) {
-                    $laporan = Laporan::create($data);
-                    
                     if ($this->import_with_lampiran) {
-                        // Dispatch Job untuk assign gambar via background processing
-                        GenerateCommitLampiranJob::dispatch($laporan, $commitDetails);
+                        $service = new GitCommitService();
+                        $diff = $service->fetchCommitDiff(
+                            $this->repo_url,
+                            $this->token,
+                            $data['sha'],
+                            $this->platform
+                        );
+                        if ($diff) {
+                            $data['diff_text'] = $diff;
+                        }
                     }
+
+                    $laporan = Laporan::create($data);
                     
                     $count++;
                 } else {
-                    // Jika data sudah ada, tapi belum punya gambar lampiran, buatkan gambar baru
-                    if ($this->import_with_lampiran && empty($existingLaporan->gambar)) {
-                        GenerateCommitLampiranJob::dispatch($existingLaporan, $commitDetails);
-                        $updatedCount++;
+                    // Jika data sudah ada, tapi belum punya diff_text, tambahkan
+                    if ($this->import_with_lampiran && empty($existingLaporan->diff_text)) {
+                        $service = new GitCommitService();
+                        $diff = $service->fetchCommitDiff(
+                            $this->repo_url,
+                            $this->token,
+                            $data['sha'],
+                            $this->platform
+                        );
+                        if ($diff) {
+                            $existingLaporan->update(['diff_text' => $diff]);
+                            $updatedCount++;
+                        }
                     }
                 }
             }
@@ -336,7 +354,7 @@ class ImportCommit extends Page implements HasForms
             $this->showPreview = false;
 
             $notificationBody = "{$count} laporan baru ditambahkan.";
-            if ($updatedCount > 0) $notificationBody .= " {$updatedCount} laporan lama diupdate (gambar lampiran).";
+            if ($updatedCount > 0) $notificationBody .= " {$updatedCount} laporan lama diupdate (diff text).";
             if ($skipped > 0) $notificationBody .= " {$skipped} data dilewati (sudah ada).";
 
             Notification::make()

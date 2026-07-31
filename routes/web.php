@@ -14,5 +14,6 @@ Route::view('profile', 'profile')
     ->name('profile');
 
 Route::post('/admin/report-generator/generate-pdf', [ReportGenerator::class, 'generatePDF'])->name('filament.admin.report-generator.generate-pdf');
+Route::post('/admin/report-generator/generate-doc', [ReportGenerator::class, 'generateDOC'])->name('filament.admin.report-generator.generate-doc');
 
 require __DIR__.'/auth.php';

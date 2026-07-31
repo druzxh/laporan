@@ -84,12 +84,17 @@
                 <button type="submit" name="preview" value="1" style="flex: 1; padding: 8px 16px; background-color: #2563eb; color: white; font-weight: bold; border-radius: 6px; border: none; cursor: pointer;" 
                         onmouseover="this.style.backgroundColor='#1d4ed8';" 
                         onmouseout="this.style.backgroundColor='#2563eb';">
-                    Preview
+                    Preview PDF
                 </button>
-                <button type="submit" style="flex: 1; padding: 8px 16px; background-color: #16a34a; color: white; font-weight: bold; border-radius: 6px; border: none; cursor: pointer;" 
+                <button type="submit" style="flex: 1; padding: 8px 16px; background-color: #ef4444; color: white; font-weight: bold; border-radius: 6px; border: none; cursor: pointer;" 
+                        onmouseover="this.style.backgroundColor='#dc2626';" 
+                        onmouseout="this.style.backgroundColor='#ef4444';">
+                    Download PDF
+                </button>
+                <button type="submit" formaction="{{ route('filament.admin.report-generator.generate-doc') }}" style="flex: 1; padding: 8px 16px; background-color: #16a34a; color: white; font-weight: bold; border-radius: 6px; border: none; cursor: pointer;" 
                         onmouseover="this.style.backgroundColor='#15803d';" 
                         onmouseout="this.style.backgroundColor='#16a34a';">
-                    Download
+                    Download DOCX
                 </button>
             </div>
         </form>
